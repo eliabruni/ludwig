@@ -22,9 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
 
 
-
 public abstract class StreamCollector extends Thread {
-
+	// TODO: decide once for all which logger to use ans use it
 	private final Logger LOG = LoggerFactory.getLogger(StreamCollector.class);
 
 	/**
@@ -117,7 +116,6 @@ public abstract class StreamCollector extends Thread {
 
 	@SuppressWarnings("null")
 	protected void updateWordsCooccurs(byte[] body) {
-
 		ByteBuffer buffer = ByteBuffer.wrap(body);
 
 		int SIZEOF_LONG = 8;
@@ -158,17 +156,14 @@ public abstract class StreamCollector extends Thread {
 			} 
 
 			else {
-
 				long otherTerm = buffer.getLong(pointer);
 				pointer += SIZEOF_LONG;
 				int newCount = buffer.getInt(pointer);
 				pointer += SIZEOF_INT;
 
 				innerScroll(term, termCooccur, otherTerm, newCount);
-
 			}
 		}
-
 	}
 
 	private void innerScroll(long term, LongIntOpenHashMap termCooccur,
@@ -192,5 +187,4 @@ public abstract class StreamCollector extends Thread {
 			termsCooccurs.put(term, termCooccur);
 		}
 	}
-
 }

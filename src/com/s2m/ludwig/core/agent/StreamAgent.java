@@ -38,9 +38,8 @@ import com.s2m.ludwig.util.FileHandler;
 
 // TODO:
 // 1. Use com.google.common.base.Preconditions;
-
 public  abstract class StreamAgent extends Thread {
-
+	// TODO: decide once for all which logger to use ans use it
 	private final Logger LOG = LoggerFactory.getLogger(StreamAgent.class);
 
 	// Retain String -> long.
@@ -69,7 +68,6 @@ public  abstract class StreamAgent extends Thread {
 	 * The path were to find the stopword list.
 	 */
 	private String STOPWORD_PATH;
-
 
 	/**
 	 * Number of TP for an agent 
@@ -106,7 +104,6 @@ public  abstract class StreamAgent extends Thread {
 	}
 
 	public StreamAgent(int WINDOW_SIZE, String STOPWORD_PATH, int NUMBER_OF_TP, int TP_THRESHOLD) {
-
 		this.WINDOW_SIZE = WINDOW_SIZE;
 		this.STOPWORD_PATH = STOPWORD_PATH;
 
@@ -128,14 +125,11 @@ public  abstract class StreamAgent extends Thread {
 	 * Initialize the list of collectors.
 	 */
 	protected void init() {
-
 		// Initialize cooccurs and TPCounters
 		for (int i = 0; i < NUMBER_OF_TP; i++) {
 			cooccurs.add(new LongObjectOpenHashMap<LongIntOpenHashMap>());
 			partitionCounter[i] = 0;
 		}
-
-
 	}
 
 	private static ConsumerConfig createConsumerConfig() {
@@ -211,14 +205,12 @@ public  abstract class StreamAgent extends Thread {
 	 * 
 	 */
 	public void sendToBroker(int TP, ArrayList<byte[]> message) {
-
 		if (producers[TP] == null) {
 			// TODO: we got to use here TP as key in the producer properties for partitioning.
 			producers[TP] = new Producer<String, byte[]>(createProducerConfig());
 		}
 
 		producers[TP].send(new ProducerData<String, byte[]>("tweet", new Integer(TP).toString(), message));
-
 	}
 
 	/**********************************************************************************
@@ -230,7 +222,6 @@ public  abstract class StreamAgent extends Thread {
 	 *  the cooccur counts of the given document.
 	 */
 	protected void insertCooccur(String text) {
-
 		Set<String> stopWords = null; 
 
 		try {
@@ -296,15 +287,13 @@ public  abstract class StreamAgent extends Thread {
 			if (TPCounter >= TP_THRESHOLD) {
 				// TODO: We have to send a list of TPs' cooccur, whose size will be decided
 				//       by a certain threshold. Once reached we send the list of messages to the broker
-				byte[] body = serialize(TP, TPCounter); 
+				byte[] body = serialize(TP, TPCounter, cooccurs.get(TP)); 
 				ArrayList<byte[]> message = new ArrayList<byte[]>();
 				message.add(body);
 				sendToBroker(TP, message);
 				TPCounter = 0;
 			}
-
 		}
-
 	}
 
 	/**
@@ -375,7 +364,6 @@ public  abstract class StreamAgent extends Thread {
 	 * 
 	 */
 	private long[] convertInMemory(TokenStream stream) {
-
 		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
 		LongArrayList terms = new LongArrayList();
 		try {
@@ -391,7 +379,6 @@ public  abstract class StreamAgent extends Thread {
 					longToStringDic.put(nextTerm, stringTerm);
 					nextTerm++;
 				}
-
 			}
 		} 
 
@@ -409,14 +396,10 @@ public  abstract class StreamAgent extends Thread {
 	 * 
 	 * @return 
 	 */
-	private byte[] serialize(int TP, int TPCounter) {
-
+	private byte[] serialize(int TP, int TPCounter, LongObjectOpenHashMap<LongIntOpenHashMap> TPCooccur) {
 		int SIZEOF_LONG = 8;
 		int SIZEOF_INT = 4;
 		int SIZEOF_BYTE = 1;
-
-		// Get termsCooccur of this collector
-		LongObjectOpenHashMap<LongIntOpenHashMap> TPCooccur = cooccurs.get(TP);		
 
 		int bufferSize = TPCooccur.keys().size() * SIZEOF_LONG + TPCounter 
 		* SIZEOF_LONG + TPCounter * SIZEOF_INT + TPCooccur.keys().size() * SIZEOF_BYTE;
@@ -456,7 +439,4 @@ public  abstract class StreamAgent extends Thread {
 
 		return buffer.array();
 	}
-
-
-
 }
