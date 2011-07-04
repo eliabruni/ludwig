@@ -29,6 +29,7 @@ import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.ObjectLongOpenHashMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
 import com.s2m.ludwig.persister.hdictionary.HBaseDictionary;
+import com.s2m.ludwig.persister.hdictionary.MemCachedHBaseDictionary;
 import com.s2m.ludwig.util.FileHandler;
 
 
@@ -338,7 +339,7 @@ public  abstract class StreamAgent extends Thread {
 		
 		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
 		LongArrayList terms = new LongArrayList();
-		HBaseDictionary dic = new HBaseDictionary();
+		MemCachedHBaseDictionary dic = new MemCachedHBaseDictionary();
 		
 		try {
 			while (stream.incrementToken()) {

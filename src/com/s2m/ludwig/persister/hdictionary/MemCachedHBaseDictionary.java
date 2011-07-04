@@ -60,7 +60,6 @@ public class MemCachedHBaseDictionary implements Dictionary {
 			}
 		}
 		
-		
 		return value;
 	}
 
