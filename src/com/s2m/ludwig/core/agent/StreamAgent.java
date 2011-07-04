@@ -25,19 +25,15 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import com.carrotsearch.hppc.LongArrayList;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.ObjectLongOpenHashMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.persister.hdictionary.HBaseDictionary;
 import com.s2m.ludwig.util.FileHandler;
-
-
-
-
-
-
 
 
 // TODO:
@@ -252,7 +248,15 @@ public  abstract class StreamAgent extends Thread {
 		TokenStream stream = new StandardAnalyzer(org.apache.lucene.util.Version.LUCENE_30, 
 				stopWords).tokenStream("content", reader);
 
-		long[] terms = convert(stream);
+		
+		// TODO: manage the case of an empty document
+		long[] terms = null;
+		try {
+			terms = convert(stream);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		for (int i = 0; i < terms.length; i++) {
 			long term = terms[i];
@@ -337,15 +341,40 @@ public  abstract class StreamAgent extends Thread {
 
 		return TPCounter;
 	}
+	
+	/**
+	 * 
+	 * Map String --> long, through a HBasedictionary 
+	 * @throws IOException 
+	 * 
+	 */
+	private long[] convert(TokenStream stream) throws IOException {
+		// TODO: Think about insert a cache
+		
+		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
+		LongArrayList terms = new LongArrayList();
+		HBaseDictionary dic = new HBaseDictionary();
+		
+		try {
+			while (stream.incrementToken()) {
+				String stringTerm = termAtt.term();
+				terms.add(dic.convert(stringTerm));
+			}
+		} 
+
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return terms.toArray();
+	}
 
 	/**
 	 * A in-memory String -> long mapping
 	 * 
-	 * TODO:
-	 * We need here HbaseDictiory 
-	 * 
 	 */
-	private long[] convert(TokenStream stream) {
+	private long[] convertInMemory(TokenStream stream) {
 
 		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
 		LongArrayList terms = new LongArrayList();
