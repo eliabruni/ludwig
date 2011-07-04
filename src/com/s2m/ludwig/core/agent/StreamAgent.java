@@ -27,8 +27,8 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.ObjectLongOpenHashMap;
+
 import com.s2m.ludwig.conf.OSSConfiguration;
-import com.s2m.ludwig.persister.hdictionary.HBaseDictionary;
 import com.s2m.ludwig.persister.hdictionary.MemCachedHBaseDictionary;
 import com.s2m.ludwig.util.FileHandler;
 

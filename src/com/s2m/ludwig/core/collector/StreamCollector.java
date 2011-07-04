@@ -1,24 +1,17 @@
 package com.s2m.ludwig.core.collector;
 
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
-import kafka.consumer.KafkaMessageStream;
 import kafka.javaapi.consumer.ConsumerConnector;
-import kafka.message.Message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
-import com.google.common.collect.ImmutableMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
 
 
