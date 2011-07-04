@@ -22,10 +22,6 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
 import com.carrotsearch.hppc.LongArrayList;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
