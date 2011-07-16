@@ -115,7 +115,6 @@ public class OSSConfiguration extends Configuration {
 	public static final String STOPWORDS_PATH = "oss.twitter.coccur.stopwords_path";
 
 	// AGENT SETTINGS
-	private static final String STREAM_SOURCE = "";
 	public static final String NUMBER_OF_AGENTS = "oss.twitter.agent.number";
 	public static final String NUMBER_OF_THREADS_PER_AGENT = "oss.twitter.agent.threads_number";
 	
@@ -129,6 +128,9 @@ public class OSSConfiguration extends Configuration {
 	public static final String NUMBER_OF_THREADS_PER_COLLECTOR = "oss.twitter.collector.threads_number";
 
 
+	// STREAM SETTINGS
+	public static final String MESSAGE_SIZE = "oss.twitter.message_size";
+	
 	// TWITTER STREAM SETTINGS
 	public static final String TWITTER_STREAM_URL = "oss.twitter.url";
 	public static final String TWITTER_USER = "oss.twitter.username";
@@ -214,8 +216,8 @@ public class OSSConfiguration extends Configuration {
 		"http://stream.twitter.com/1/statuses/sample.json");
 	}
 
-	public String getStreamSource() {
-		return get(STREAM_SOURCE);
+	public int getMessageSize() {
+		return getInt(NUMBER_OF_THREADS_PER_COLLECTOR, 10);
 	}
 
 

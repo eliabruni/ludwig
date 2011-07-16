@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
 import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.core.stream.StreamConnection;
 
 
 /**
@@ -21,7 +22,7 @@ import com.s2m.ludwig.conf.OSSConfiguration;
  * Documentation for this stream can be found here:
  * http://apiwiki.twitter.com/Streaming-API-Documentation
  */
-public class TwitterStreamConnection implements Runnable {
+public class TwitterStreamConnection extends StreamConnection {
 
 	private String urlString;
 	private String userid;
@@ -42,8 +43,6 @@ public class TwitterStreamConnection implements Runnable {
 		this.userid = userid;
 		this.password = password;
 	}
-
-	private LinkedBlockingQueue<String> messageQueue = new LinkedBlockingQueue<String>();
 
 	public void setMaxBackoffTime(long maxBackoffTime) {
 		this.maxBackoffTime = maxBackoffTime;
@@ -94,19 +93,6 @@ public class TwitterStreamConnection implements Runnable {
 			}
 			messageCount++;
 			messageQueue.add(inputLine);
-		}
-	}
-
-	public LinkedBlockingQueue<String> getMessageQueue() {
-		return messageQueue;
-	}
-
-	public String take() {
-		try {
-			return (messageQueue != null) ? messageQueue.take() : null;
-		}
-		catch(InterruptedException e) {
-			return null;
 		}
 	}
 

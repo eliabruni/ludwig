@@ -7,11 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;
 
-
-
-import stream.TwitterStreamingConnection;
-
-
 public class TwitterStreamSource implements Runnable {
 
 	LinkedBlockingQueue<String> messageQueue;
@@ -51,7 +46,6 @@ public class TwitterStreamSource implements Runnable {
 						String message = messageQueue.take();
 						messages.add(message);
 					}
-					
 					
 					// TODO:
 					// Check if there's a smarter/faster way to serialize messages

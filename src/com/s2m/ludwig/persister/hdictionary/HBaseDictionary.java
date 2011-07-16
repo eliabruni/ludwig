@@ -22,7 +22,7 @@ public class HBaseDictionary implements Dictionary {
 	
 	public HBaseDictionary() throws IOException {
 		Configuration conf = HBaseConfiguration.create();
-		htable = new HTable(conf, "SemGraphDictionary");
+		htable = new HTable(conf, "TwitterDictionary");
 	}
 	
 	public long convert(String word) {

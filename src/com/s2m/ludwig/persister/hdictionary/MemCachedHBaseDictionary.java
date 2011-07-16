@@ -34,10 +34,9 @@ public class MemCachedHBaseDictionary implements Dictionary {
 		startMemCache();
 	}
 	
-	
 
 	// Set up connection pool once at class load
-	public void startMemCache() {
+	private void startMemCache() {
 
 		mcc = new MemCachedClient();
 		
