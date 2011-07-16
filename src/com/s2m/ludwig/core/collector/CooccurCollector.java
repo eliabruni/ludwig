@@ -36,13 +36,9 @@ public class CooccurCollector extends Thread {
 	 */
 	private int NUMBER_OF_DIFFERENT_COLLECTORS;
 
-	/**
-	 * Retain the number of agents.
-	 */
-	private int NUMBER_OF_THREADS_PER_COLLECTOR;
 
 	/**
-	 * The consumer of the agents' stream.
+	 * The consumer of the stream.
 	 */
 	protected final ConsumerConnector consumer;
 
@@ -55,14 +51,13 @@ public class CooccurCollector extends Thread {
 	static OSSConfiguration conf = OSSConfiguration.get();
 
 	public CooccurCollector(String topic) {
-		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors(), conf.getNumberOfThreadsPerCollector());
+		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors());
 		this.topic = topic;
 	}
 
-	public CooccurCollector(int NUMBER_OF_SAME_COLLECTORS, int NUMBER_OF_DIFFERENT_COLLECTORS, int NUMBER_OF_THREADS_PER_COLLECTOR) {
+	public CooccurCollector(int NUMBER_OF_SAME_COLLECTORS, int NUMBER_OF_DIFFERENT_COLLECTORS) {
 		this.NUMBER_OF_SAME_COLLECTORS = NUMBER_OF_SAME_COLLECTORS;
 		this.NUMBER_OF_DIFFERENT_COLLECTORS = NUMBER_OF_DIFFERENT_COLLECTORS;
-		this.NUMBER_OF_THREADS_PER_COLLECTOR = NUMBER_OF_THREADS_PER_COLLECTOR;
 		consumer = Consumer.createJavaConsumerConnector(createConsumerConfig());
 	}
 
@@ -87,11 +82,11 @@ public class CooccurCollector extends Thread {
 
 		// TODO: comment here + maybe change the way to access to conf
 		Map<String, List<KafkaMessageStream>> MessageStreams = 
-			consumer.createMessageStreams(ImmutableMap.of(topic, conf.getNumberOfDifferentCollectors()));
+			consumer.createMessageStreams(ImmutableMap.of(topic, NUMBER_OF_DIFFERENT_COLLECTORS));
 		List<KafkaMessageStream> streams = MessageStreams.get(topic);
 
 		// TODO: comment here + maybe change the way to access to conf
-		ExecutorService executors = Executors.newFixedThreadPool(conf.getNumberOfSameCollectors());
+		ExecutorService executors = Executors.newFixedThreadPool(NUMBER_OF_SAME_COLLECTORS);
 
 		// consume the messages in the threads
 		for (final KafkaMessageStream stream: streams) {
@@ -109,7 +104,7 @@ public class CooccurCollector extends Thread {
 	}
 
 	/**********************************************************************************
-	 * StreamCollector helper functions
+	 * CooccurCollector helper functions
 	 **********************************************************************************/
 
 	@SuppressWarnings("null")

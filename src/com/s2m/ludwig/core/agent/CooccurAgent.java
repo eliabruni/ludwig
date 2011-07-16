@@ -261,7 +261,7 @@ public class CooccurAgent extends Thread {
 	}
 
 	/**********************************************************************************
-	 * StreamAgent helper functions
+	 * CooccurAgent helper functions
 	 **********************************************************************************/
 
 	/**
