@@ -168,7 +168,7 @@ public class CooccurAgent extends Thread {
 		// TODO: Use OSSConfiguration
 
 		Properties props = new Properties();
-		props.put("serializer.class", conf.getStreamSource());
+		props.put("serializer.class", "kafka.serializer.StringEncoder");
 		props.put("zk.connect", "127.0.0.1:2181");
 
 		return new ProducerConfig(props);
@@ -329,7 +329,7 @@ public class CooccurAgent extends Thread {
 			// the cooccur for this TP are serialized and sent to
 			// the broker. All is reinitialized. 
 			// TODO: is right to put a check here, or better a independent thread that
-			//       every some time check. Even better, we should put here to different 
+			//       every some time checks . Even better, we should put here two different 
 			//       thresholds: time and count.  
 			if (TPCounter >= TP_THRESHOLD) {
 				// TODO: We have to send a list of TPs' cooccur, whose size will be decided

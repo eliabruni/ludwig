@@ -220,6 +220,11 @@ public class OSSConfiguration extends Configuration {
 		return getInt(NUMBER_OF_THREADS_PER_COLLECTOR, 10);
 	}
 
+	public Object getStreamSource() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }
