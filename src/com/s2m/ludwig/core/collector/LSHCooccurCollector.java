@@ -22,7 +22,7 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.google.common.collect.ImmutableMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
-import com.s2m.ludwig.util.LSH;
+import com.s2m.ludwig.util.lsh.LSH;
 
 
 public class LSHCooccurCollector extends Thread {
@@ -186,12 +186,6 @@ public class LSHCooccurCollector extends Thread {
 			termsCooccurs.put(term, termCooccur);
 		}
 	}
-	
-	private void flushSignatures() {
-		
-		
-	}
-	
 	
 }
 

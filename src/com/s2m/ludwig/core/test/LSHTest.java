@@ -2,7 +2,7 @@ package com.s2m.ludwig.core.test;
 
 import java.util.HashMap;
 
-import com.s2m.ludwig.util.LSH;
+import com.s2m.ludwig.util.lsh.LSH;
 
 public class LSHTest {
 	
