@@ -9,26 +9,26 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
-import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 
 
 public class HBaseLSHTable {
 
+	private static HTablePool pool = new HTablePool();
 	private static final long BUFFERSIZE = 65536;
 	private static final byte[] SUMARRAYS = Bytes.toBytes("SumArrays");
 
 	private HTable htable;
-
 	private List<Put> puts;
 	private List<Get> gets;
 
 	public HBaseLSHTable() throws IOException {
-		// TODO: pass to HTablePool
 		Configuration conf = HBaseConfiguration.create();
 		htable = new HTable(conf, "SumArrays");
 		htable.setWriteBufferSize(BUFFERSIZE);
@@ -51,8 +51,8 @@ public class HBaseLSHTable {
 
 	}
 
-
 	public void flushSumArrays(List<Put> puts) throws IOException {
+		HTableInterface htable = pool.getTable(SUMARRAYS);
 		htable.put(puts);
 		puts.clear();
 	}
@@ -65,6 +65,7 @@ public class HBaseLSHTable {
 
 	public LongObjectOpenHashMap<float[]> fetchSumArrays() throws IOException {
 		LongObjectOpenHashMap<float[]> sumArrays = new LongObjectOpenHashMap<float[]>();
+		HTableInterface htable = pool.getTable(SUMARRAYS);
 		Result[] results = htable.get(gets);
 		for (Result res : results) {
 			byte[] byteTerm = res.getRow();
