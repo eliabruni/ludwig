@@ -54,7 +54,7 @@ public class HBaseLSHTable {
 
 	public void flushSumArrays(List<Put> puts) throws IOException {
 		htable.put(puts);
-		puts = new ArrayList<Put>();
+		puts.clear();
 	}
 
 	public void createSumArrayGet(long word) {
