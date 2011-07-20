@@ -52,7 +52,7 @@ public class HBaseLSHTable {
 	}
 
 
-	public void flushWords(List<Put> puts) throws IOException {
+	public void flushSumArrays(List<Put> puts) throws IOException {
 		htable.put(puts);
 		puts = new ArrayList<Put>();
 	}
