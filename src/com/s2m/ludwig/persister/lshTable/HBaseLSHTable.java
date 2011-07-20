@@ -76,6 +76,7 @@ public class HBaseLSHTable {
 			int pointer = 0;
 			while (buffer.hasRemaining()) {
 				sumArray[pointer] = buffer.getFloat();
+				pointer++;
 			}
 			sumArrays.put(term, sumArray);
 		}
