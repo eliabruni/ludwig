@@ -12,14 +12,17 @@ import org.apache.hadoop.hbase.client.Put;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.s2m.ludwig.core.test.LSHTest;
-import com.s2m.ludwig.persister.lshTable.HBaseLSHTable;
+import com.s2m.ludwig.persister.lshTable.LSHTable;
 
 /**
- * Builds / compares signature vectors. 
- * Modified code of Benjamin Van Durme, vandurme@cs.jhu.edu
+ * 
+ * This class implements Online Generation of Locality Sensitive Hash Signature.
+ * See http://www.cs.jhu.edu/~vandurme/papers/VanDurmeLallACL10.pdf.
+ *
  */
 public class LSH {
-
+	// TODO: Randomness between collectors must be tied based on a shared seed s.
+	
 	private static final Log LOG = LogFactory.getLog(LSH.class);  
 	/** Number of bits (b) */
 	private static final int NUM_BITS = 256;//4096;//256;
@@ -78,11 +81,9 @@ public class LSH {
 		return sig;
 	}
 
-	
-	
 	public void buildSumArrays(LongObjectOpenHashMap<LongIntOpenHashMap> termsCooccurs) throws IOException {
 
-		HBaseLSHTable lshTable = new HBaseLSHTable();
+		LSHTable lshTable = new LSHTable();
 		ArrayList<Put> puts = new ArrayList<Put>();
 
 		final boolean outerStates[] = termsCooccurs.allocated;
@@ -110,14 +111,12 @@ public class LSH {
 					}
 				}
 				
-				puts.add(lshTable.flushWord(term, sumArray));
+				lshTable.createSumArrayPut(term, sumArray);
 			}
 		}
 		
-		lshTable.flushWords(puts);
+		lshTable.flushSumArrays(puts);
 	}
-
-
 
 	public static double scoreSignatures(byte[] sigX, byte[] sigY) {
 		return LSHSignature.approximateCosine(sigX, sigY);

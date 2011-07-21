@@ -1,6 +1,5 @@
 package com.s2m.ludwig.core.collector;
 
-package com.s2m.ludwig.core.collector;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -22,11 +21,12 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.google.common.collect.ImmutableMap;
 import com.s2m.ludwig.conf.OSSConfiguration;
-import com.s2m.ludwig.util.lsh.LSH;
 
 
 public class LSHCooccurCollector extends Thread {
-	// TODO: decide once for all which logger to use ans use it
+	// TODO:
+	// 1. A way to decide how to flush cooccurs to persister (based on the space cooccurs is consuming).
+	// 2. We need (together with cooccurs) to flush sumArrays to LSHTable.
 	private final Logger LOG = LoggerFactory.getLogger(CooccurCollector.class);
 
 	/**
@@ -51,7 +51,7 @@ public class LSHCooccurCollector extends Thread {
 	private String topic;
 	
 	private LongObjectOpenHashMap<byte[]> signatures;
-	private static LongObjectOpenHashMap<LongIntOpenHashMap> termsCooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
+	private static LongObjectOpenHashMap<LongIntOpenHashMap> cooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
 	
 	static OSSConfiguration conf = OSSConfiguration.get();
 
@@ -109,6 +109,7 @@ public class LSHCooccurCollector extends Thread {
 
 	}
 
+	
 	/**********************************************************************************
 	 * CooccurCollector helper functions
 	 **********************************************************************************/
@@ -140,8 +141,8 @@ public class LSHCooccurCollector extends Thread {
 				pointer += SIZEOF_INT;
 
 
-				if (termsCooccurs.containsKey(term)) {
-					termCooccur = termsCooccurs.get(term);
+				if (cooccurs.containsKey(term)) {
+					termCooccur = cooccurs.get(term);
 
 					innerScroll(term, termCooccur, otherTerm, newCount);
 				} 
@@ -149,7 +150,7 @@ public class LSHCooccurCollector extends Thread {
 				else {
 					termCooccur = new LongIntOpenHashMap();
 					termCooccur.put(otherTerm, newCount);
-					termsCooccurs.put(term, termCooccur);
+					cooccurs.put(term, termCooccur);
 				}
 
 			} 
@@ -170,7 +171,7 @@ public class LSHCooccurCollector extends Thread {
 		if (termCooccur.containsKey(otherTerm)) {
 			int oldCount = termCooccur.get(otherTerm);
 			termCooccur.put(otherTerm, oldCount + newCount);
-			termsCooccurs.put(term, termCooccur);
+			cooccurs.put(term, termCooccur);
 
 			// DEBUG
 			//int increment = newCount + oldCount;
@@ -183,7 +184,7 @@ public class LSHCooccurCollector extends Thread {
 
 		else {
 			termCooccur.put(otherTerm, newCount);
-			termsCooccurs.put(term, termCooccur);
+			cooccurs.put(term, termCooccur);
 		}
 	}
 	

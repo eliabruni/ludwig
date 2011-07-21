@@ -46,23 +46,10 @@ import com.s2m.ludwig.twitter.User;
 import com.s2m.ludwig.util.FileHandler;
 
 
-// TODO:
-// 1. Use com.google.common.base.Preconditions;
+
 public class CooccurAgent extends Thread {
-	// TODO: decide once for all which logger to use ans use it
+	// TODO: Change the flush-to-broker condition based on space consuming.
 	private final Logger LOG = LoggerFactory.getLogger(CooccurAgent.class);
-
-	// Retain String -> long.
-	private ObjectLongOpenHashMap<String> stringToLongDic = new ObjectLongOpenHashMap<String>();
-	// TODO: change with HBaseDictionary
-
-	// Retain long -> String .
-	private LongObjectOpenHashMap<String> longToStringDic = new LongObjectOpenHashMap<String>();
-	// TODO: change with HBaseDictionary
-
-	// Counter for dictionary unique id .
-	private long nextTerm = 0;
-	// TODO: change with HBaseDictionary
 
 	/**
 	 * Retain all the cooccur counts.
@@ -260,6 +247,7 @@ public class CooccurAgent extends Thread {
 		producers[TP].send(new ProducerData<String, byte[]>("tweet", new Integer(TP).toString(), message));
 	}
 
+	
 	/**********************************************************************************
 	 * CooccurAgent helper functions
 	 **********************************************************************************/
@@ -395,37 +383,6 @@ public class CooccurAgent extends Thread {
 			while (stream.incrementToken()) {
 				String stringTerm = termAtt.term();
 				terms.add(dic.convert(stringTerm));
-			}
-		} 
-
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return terms.toArray();
-	}
-
-	/**
-	 * A in-memory String -> long mapping
-	 * 
-	 */
-	private long[] convertInMemory(TokenStream stream) {
-		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
-		LongArrayList terms = new LongArrayList();
-		try {
-			while (stream.incrementToken()) {
-				String stringTerm = termAtt.term();
-				if (stringToLongDic.containsKey(stringTerm)) {
-					terms.add(stringToLongDic.get(stringTerm));
-				} 
-
-				else {
-					terms.add(nextTerm);
-					stringToLongDic.put(stringTerm, nextTerm);
-					longToStringDic.put(nextTerm, stringTerm);
-					nextTerm++;
-				}
 			}
 		} 
 
