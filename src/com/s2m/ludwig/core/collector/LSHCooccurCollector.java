@@ -1,6 +1,7 @@
 package com.s2m.ludwig.core.collector;
 
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,11 @@ import org.slf4j.LoggerFactory;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.google.common.collect.ImmutableMap;
+
 import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.persister.lshTable.LSHSink;
+import com.s2m.ludwig.persister.sink.CooccursSink;
+import com.s2m.ludwig.util.lsh.LSH;
 
 
 public class LSHCooccurCollector extends Thread {
@@ -39,7 +44,6 @@ public class LSHCooccurCollector extends Thread {
 	 */
 	private int NUMBER_OF_DIFFERENT_COLLECTORS;
 
-
 	/**
 	 * The consumer of the stream.
 	 */
@@ -50,21 +54,35 @@ public class LSHCooccurCollector extends Thread {
 	 */
 	private String topic;
 	
+	/**
+	 * The HBase table where to flush the cooccurrences.
+	 */
+	private CooccursSink cooccursSink;
+	
+	/**
+	 * Locality Sensitive Hash to approximate cosines.
+	 */
+	private LSH lsh;
+	
+	
 	private LongObjectOpenHashMap<byte[]> signatures;
-	private static LongObjectOpenHashMap<LongIntOpenHashMap> cooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
+	private static LongObjectOpenHashMap<LongIntOpenHashMap> cooccurs;
 	
 	static OSSConfiguration conf = OSSConfiguration.get();
 
-	public LSHCooccurCollector(String topic) {
+	public LSHCooccurCollector(String topic) throws IOException {
 		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors());
 		this.topic = topic;
 		this.signatures = new LongObjectOpenHashMap<byte[]>();
 	}
 
-	public LSHCooccurCollector(int NUMBER_OF_SAME_COLLECTORS, int NUMBER_OF_DIFFERENT_COLLECTORS) {
+	public LSHCooccurCollector(int NUMBER_OF_SAME_COLLECTORS, int NUMBER_OF_DIFFERENT_COLLECTORS) throws IOException {
 		this.NUMBER_OF_SAME_COLLECTORS = NUMBER_OF_SAME_COLLECTORS;
 		this.NUMBER_OF_DIFFERENT_COLLECTORS = NUMBER_OF_DIFFERENT_COLLECTORS;
+		cooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
 		consumer = Consumer.createJavaConsumerConnector(createConsumerConfig());
+		cooccursSink = new CooccursSink();
+		lsh = new LSH();
 	}
 
 	private static ConsumerConfig createConsumerConfig() {
@@ -83,9 +101,7 @@ public class LSHCooccurCollector extends Thread {
 	}
 
 	public void run() {
-
-		OSSConfiguration conf = OSSConfiguration.get();
-
+		
 		// TODO: comment here + maybe change the way to access to conf
 		Map<String, List<KafkaMessageStream>> MessageStreams = 
 			consumer.createMessageStreams(ImmutableMap.of(topic, NUMBER_OF_DIFFERENT_COLLECTORS));
@@ -99,21 +115,41 @@ public class LSHCooccurCollector extends Thread {
 			executors.submit(new Runnable() {
 
 				public void run() {
-
 					for(Message message: stream) {
 						updateWordsCooccurs(message.buffer().array());
 					}
 				}
 			});
 		}
-
 	}
 
 	
 	/**********************************************************************************
 	 * CooccurCollector helper functions
+	 * @throws IOException 
 	 **********************************************************************************/
 
+	/**
+	 * Flush all the cooccurs to HBase and create+flush all the related sumArrays.
+	 */
+	protected void flushCooccurs() throws IOException {
+		final boolean outerStates[] = cooccurs.allocated;
+		final long[] outerKeys = cooccurs.keys;
+		
+		for (int k = 0; k < outerStates.length; k++) {
+			if(outerStates[k]) {
+				long term = outerKeys[k];
+				LongIntOpenHashMap cooccur = cooccurs.get(term);
+				cooccursSink.flushWord(term, cooccur);
+				lsh.buildSumArray(term, cooccur);
+			}
+		}
+		
+		lsh.flushSumrrays();
+		cooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
+	}
+	
+	
 	@SuppressWarnings("null")
 	protected void updateWordsCooccurs(byte[] body) {
 		ByteBuffer buffer = ByteBuffer.wrap(body);
