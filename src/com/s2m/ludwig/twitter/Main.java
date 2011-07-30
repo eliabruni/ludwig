@@ -1,7 +1,7 @@
 package com.s2m.ludwig.twitter;
 
-import com.s2m.ludwig.core.agent.CooccurAgent;
-import com.s2m.ludwig.core.collector.CooccurCollector;
+import com.s2m.ludwig.core.cooccur.agent.CooccurAgent;
+import com.s2m.ludwig.core.cooccur.collector.CooccurCollector;
 import com.s2m.ludwig.core.handler.StreamSource;
 
 public class Main {

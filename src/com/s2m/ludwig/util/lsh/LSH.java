@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
-import com.s2m.ludwig.persister.lshTable.LSHSink;
+import com.s2m.ludwig.persister.cooccur.lshTable.LSHSink;
 
 /**
  * 
