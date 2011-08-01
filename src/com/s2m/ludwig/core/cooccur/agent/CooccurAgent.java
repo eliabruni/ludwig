@@ -39,17 +39,32 @@ import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.ObjectLongOpenHashMap;
 import com.google.common.collect.ImmutableMap;
 
-import com.s2m.ludwig.conf.OSSConfiguration;
-import com.s2m.ludwig.persister.cooccur.hdictionary.MemCachedHBaseDictionary;
-import com.s2m.ludwig.twitter.Status;
-import com.s2m.ludwig.twitter.User;
+import com.s2m.ludwig.conf.LudwigConfiguration;
+import com.s2m.ludwig.core.docs.Docs;
+import com.s2m.ludwig.core.users.Users;
+import com.s2m.ludwig.persister.cooccur.hdictionary.TermDictionary;
+import com.s2m.ludwig.twitter.TwitterStatus;
+import com.s2m.ludwig.twitter.TwitterUser;
 import com.s2m.ludwig.util.FileHandler;
 
 
 
 public class CooccurAgent extends Thread {
-	// TODO: Change the flush-to-broker condition based on space consuming.
+	// TODO: 
+	// 1. Change the flush-to-broker condition based on space consuming.
+	// 2. Create a class Cooccurs, similar to Users and introduce here.		
+	//
 	private final Logger LOG = LoggerFactory.getLogger(CooccurAgent.class);
+
+	/**
+	 * This class retains all the info about the users.
+	 */
+	private Users users;
+
+	/**
+	 * This class retains all the info about the docs.
+	 */
+	private Docs docs;
 
 	/**
 	 * Retain all the cooccur counts.
@@ -57,7 +72,7 @@ public class CooccurAgent extends Thread {
 	private ObjectArrayList<LongObjectOpenHashMap<LongIntOpenHashMap>> cooccurs;
 
 	/**
-	 * The size of cooccur window
+	 * The size of cooccur window.
 	 */
 	private int WINDOW_SIZE;
 
@@ -67,13 +82,13 @@ public class CooccurAgent extends Thread {
 	private String STOPWORD_PATH;
 
 	/**
-	 * Number of TP for an agent 
+	 * Number of TP for an agent. 
 	 */
 	private int NUMBER_OF_TP;
 
 	/**
 	 * This is the threshold after which a TP has to be emptied and its 
-	 * cooccur sent to the broker
+	 * cooccur sent to the broker.
 	 */
 	private int TP_THRESHOLD;
 
@@ -92,27 +107,30 @@ public class CooccurAgent extends Thread {
 	 * The consumer of the stream.
 	 */
 	protected final ConsumerConnector consumer;
-	
+
 	/**
 	 * The topic of that consumes this collector.
 	 */
 	private String topic;
 
-	static OSSConfiguration conf = OSSConfiguration.get();
+	static LudwigConfiguration conf = LudwigConfiguration.get();
 
 
-	public CooccurAgent(String topic) {
+	public CooccurAgent(String topic) throws IOException {
 		this(conf.getWindowSize(), conf.getStopwordsPath(), conf.getNumberOfTP(), conf.getTPThreshold());
 		this.topic = topic;
 	}
 
-	public CooccurAgent(int WINDOW_SIZE, String STOPWORD_PATH, int NUMBER_OF_TP, int TP_THRESHOLD) {
+	public CooccurAgent(int WINDOW_SIZE, String STOPWORD_PATH, int NUMBER_OF_TP, int TP_THRESHOLD) throws IOException {
 		this.WINDOW_SIZE = WINDOW_SIZE;
 		this.STOPWORD_PATH = STOPWORD_PATH;
 
 		this.NUMBER_OF_TP = NUMBER_OF_TP;
 		this.TP_THRESHOLD = TP_THRESHOLD;
-
+		
+		users = new Users();
+		docs = new Docs();
+		
 		cooccurs = new ObjectArrayList<LongObjectOpenHashMap<LongIntOpenHashMap>>();
 		partitionCounter = new int[NUMBER_OF_TP];
 
@@ -166,9 +184,9 @@ public class CooccurAgent extends Thread {
 	 * Compute cooccur of tweets coming from TwitterStreamingSource.
 	 */
 	public void run() {
-		
-		OSSConfiguration conf = OSSConfiguration.get();
-		
+
+		LudwigConfiguration conf = LudwigConfiguration.get();
+
 		// Initialize the list of collectors
 		init();
 
@@ -202,22 +220,27 @@ public class CooccurAgent extends Thread {
 						}
 
 						if(json.path("delete").isMissingNode()) {
-							Status status = null;
+							TwitterStatus twitterStatus = null;
 							try {
-								status = new Status(json);
+								twitterStatus = new TwitterStatus(json);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							User user = status.user;
-							String language = user.lang;
+							TwitterUser twitterUser = twitterStatus.user;
+							String language = twitterUser.lang;
 
 							if (language.equals("en")) {
-
-								String text = status.text;
+								
+								// We take the tweet message.
+								String text = twitterStatus.text;
+								// We take the user id.
+								long userId = users.getUserId(twitterUser.name);
+								// We take the user id.
+								long docId = docs.getDocId(twitterUser.url);
 
 								// Compute word co-occurrences of the document
-								insertCooccur(text);
+								insertCooccur(text, docId, userId);
 
 							}
 						}
@@ -247,7 +270,7 @@ public class CooccurAgent extends Thread {
 		producers[TP].send(new ProducerData<String, byte[]>("tweet", new Integer(TP).toString(), message));
 	}
 
-	
+
 	/**********************************************************************************
 	 * CooccurAgent helper functions
 	 **********************************************************************************/
@@ -256,7 +279,7 @@ public class CooccurAgent extends Thread {
 	 *  Preprocess, convert terms to longs and populate termsCooccurs with 
 	 *  the cooccur counts of the given document.
 	 */
-	protected void insertCooccur(String text) {
+	protected void insertCooccur(String text, long docId, long userId) {
 		Set<String> stopWords = null; 
 
 		try {
@@ -274,7 +297,7 @@ public class CooccurAgent extends Thread {
 		TokenStream stream = new StandardAnalyzer(org.apache.lucene.util.Version.LUCENE_30, 
 				stopWords).tokenStream("content", reader);
 
-		
+
 		// TODO: manage the case of an empty document
 		long[] terms = null;
 		try {
@@ -301,7 +324,7 @@ public class CooccurAgent extends Thread {
 			if (TPCoccour.containsKey(term)) {
 				LongIntOpenHashMap map = TPCoccour.get(term);
 				// Return the counter updated from the next sift window
-				TPCounter = siftWindow(terms, TPCoccour, i, term, map, TPCounter);
+				TPCounter = siftWindow(terms, TPCoccour, i, term, map, TPCounter, userId, docId);
 				// TODO: It's a bad way, find a more elegant
 				partitionCounter[TP] = TPCounter;
 			} 
@@ -309,7 +332,7 @@ public class CooccurAgent extends Thread {
 			else {
 				LongIntOpenHashMap map = new LongIntOpenHashMap();
 				// Return the counter updated from the next sift window
-				TPCounter = siftWindow(terms, TPCoccour, i, term, map, TPCounter);
+				TPCounter = siftWindow(terms, TPCoccour, i, term, map, TPCounter, userId, docId);
 				partitionCounter[TP] = TPCounter;
 			}
 
@@ -325,7 +348,7 @@ public class CooccurAgent extends Thread {
 				byte[] body = serialize(TP, TPCounter, cooccurs.get(TP)); 
 				ArrayList<byte[]> message = new ArrayList<byte[]>();
 				message.add(body);
-				
+
 				sendToBroker(TP, message);
 				partitionCounter[TP] = 0;
 			}
@@ -343,7 +366,7 @@ public class CooccurAgent extends Thread {
 	 * @param map
 	 */
 	private int siftWindow(long[] terms, LongObjectOpenHashMap<LongIntOpenHashMap> termsCooccur, 
-			int i, long term, LongIntOpenHashMap map, int TPCounter) {
+			int i, long term, LongIntOpenHashMap map, int TPCounter, long userId, long docId) {
 
 		for (int j = i - WINDOW_SIZE; j < i + WINDOW_SIZE + 1; j++) {
 			if (j == i || j < 0)
@@ -355,18 +378,22 @@ public class CooccurAgent extends Thread {
 			if (map.containsKey(terms[j])) {
 				map.put(terms[j], map.get(terms[j]) + 1);
 				termsCooccur.put(term, map);
+				// Here we use term to update the user BOW, because term is the pivot of the window.
+				users.addTermToUserBOW(userId, term);
 			} 
 
 			else {
 				map.put(terms[j], 1);
 				termsCooccur.put(term, map);
+				// Here we use term to update the user BOW, because term is the pivot of the window.
+				users.addTermToUserBOW(userId, term);
 				TPCounter++;
 			}
 		}
 
 		return TPCounter;
 	}
-	
+
 	/**
 	 * 
 	 * Map String --> long, through a HBasedictionary and a cache.
@@ -374,11 +401,11 @@ public class CooccurAgent extends Thread {
 	 * 
 	 */
 	private long[] convert(TokenStream stream) throws IOException {
-		
+
 		TermAttribute termAtt = (TermAttribute) stream.addAttribute(TermAttribute.class);
 		LongArrayList terms = new LongArrayList();
-		MemCachedHBaseDictionary dic = new MemCachedHBaseDictionary();
-		
+		TermDictionary dic = new TermDictionary();
+
 		try {
 			while (stream.incrementToken()) {
 				String stringTerm = termAtt.term();

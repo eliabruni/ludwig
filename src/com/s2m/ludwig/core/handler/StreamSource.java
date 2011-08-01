@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.conf.LudwigConfiguration;
 import com.s2m.ludwig.core.stream.StreamConnection;
 
 import kafka.javaapi.producer.Producer;
@@ -25,7 +25,7 @@ public class StreamSource implements Runnable {
 
 	LinkedBlockingQueue<String> messageQueue;
 
-	static OSSConfiguration conf = OSSConfiguration.get();
+	static LudwigConfiguration conf = LudwigConfiguration.get();
 
 	private ProducerConfig createProducerConfig() {
 		// TODO: Use OSSConfiguration

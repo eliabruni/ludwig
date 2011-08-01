@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.util.EncodingUtil;
 
-import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.conf.LudwigConfiguration;
 import com.s2m.ludwig.core.stream.StreamConnection;
 
 
@@ -32,7 +32,7 @@ public class TwitterStreamConnection extends StreamConnection {
 	private long blankCount = 0;
 	private String streamName;
 
-	static OSSConfiguration conf = OSSConfiguration.get();
+	static LudwigConfiguration conf = LudwigConfiguration.get();
 
 	public TwitterStreamConnection() {
 		this(conf.getTwitterURL(), conf.getTwitterName(), conf.getTwitterPW());

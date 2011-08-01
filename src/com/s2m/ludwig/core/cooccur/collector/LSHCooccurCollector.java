@@ -22,9 +22,9 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.google.common.collect.ImmutableMap;
 
-import com.s2m.ludwig.conf.OSSConfiguration;
-import com.s2m.ludwig.persister.cooccur.lshTable.LSHSink;
-import com.s2m.ludwig.persister.sink.CooccursSink;
+import com.s2m.ludwig.conf.LudwigConfiguration;
+import com.s2m.ludwig.persister.cooccur.lsh.LSHSink;
+import com.s2m.ludwig.persister.cooccur.sink.CooccursSink;
 import com.s2m.ludwig.util.lsh.LSH;
 
 
@@ -68,7 +68,7 @@ public class LSHCooccurCollector extends Thread {
 	private LongObjectOpenHashMap<byte[]> signatures;
 	private static LongObjectOpenHashMap<LongIntOpenHashMap> cooccurs;
 	
-	static OSSConfiguration conf = OSSConfiguration.get();
+	static LudwigConfiguration conf = LudwigConfiguration.get();
 
 	public LSHCooccurCollector(String topic) throws IOException {
 		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors());

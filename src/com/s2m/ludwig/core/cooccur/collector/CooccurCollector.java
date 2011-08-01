@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.google.common.collect.ImmutableMap;
-import com.s2m.ludwig.conf.OSSConfiguration;
+import com.s2m.ludwig.conf.LudwigConfiguration;
 
 
 public class CooccurCollector extends Thread {
@@ -48,7 +48,7 @@ public class CooccurCollector extends Thread {
 	private String topic;
 
 	private static LongObjectOpenHashMap<LongIntOpenHashMap> termsCooccurs = new LongObjectOpenHashMap<LongIntOpenHashMap>();
-	static OSSConfiguration conf = OSSConfiguration.get();
+	static LudwigConfiguration conf = LudwigConfiguration.get();
 
 	public CooccurCollector(String topic) {
 		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors());
@@ -78,7 +78,7 @@ public class CooccurCollector extends Thread {
 
 	public void run() {
 
-		OSSConfiguration conf = OSSConfiguration.get();
+		LudwigConfiguration conf = LudwigConfiguration.get();
 
 		// TODO: comment here + maybe change the way to access to conf
 		Map<String, List<KafkaMessageStream>> MessageStreams = 
