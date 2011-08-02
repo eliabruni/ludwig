@@ -12,6 +12,7 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import com.carrotsearch.hppc.LongArrayList;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
+import com.s2m.ludwig.conf.LudwigConfiguration;
 import com.s2m.ludwig.core.docs.Docs;
 import com.s2m.ludwig.core.users.Users;
 import com.s2m.ludwig.persister.cooccur.hdictionary.TermDictionary;
@@ -37,12 +38,30 @@ public class Cooccur {
 	
 	private Docs docs;
 	
+	static LudwigConfiguration conf = LudwigConfiguration.get();
+	
+	
+	/**********************************************************************************
+	 * Constructors
+	 **********************************************************************************/
+	
+	public Cooccur(int WINDOW_SIZE, String STOPWORD_PATH) {
+		this.WINDOW_SIZE = WINDOW_SIZE;
+		this.STOPWORD_PATH = STOPWORD_PATH;
+	}
+	
 	public Cooccur(Cooccurs cooccurs, int numberOfTP, Users users, Docs docs) {
+		this(conf.getWindowSize(), conf.getStopwordsPath());
 		this.cooccurs = cooccurs;
 		this.numberOfTP = numberOfTP;
 		this.users = users;
 		this.docs = docs;
 	}
+	
+
+	/**********************************************************************************
+	 * Main methods
+	 **********************************************************************************/
 	
 	/**
 	 *  Preprocess, convert terms to longs and populate termsCooccurs with 
@@ -101,13 +120,10 @@ public class Cooccur {
 				// Return the counter updated from the next sift window
 				TPCounters[TP] = siftWindow(terms, cooccur, TPCounter, i, term, userId, docId);
 			}
-
 		}
 		
 		return TPCounters;
 	}
-	
-	
 
 
 	/**********************************************************************************
@@ -182,7 +198,6 @@ public class Cooccur {
 				terms.add(dic.convert(stringTerm));
 			}
 		} 
-
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -99,7 +99,11 @@ public class CooccurAgentBeta extends Thread {
 	private String topic;
 
 	static LudwigConfiguration conf = LudwigConfiguration.get();
+	
 
+	/**********************************************************************************
+	 * Constructors
+	 **********************************************************************************/
 
 	public CooccurAgentBeta(String topic) throws IOException {
 		this(conf.getNumberOfTP(), conf.getTPThreshold());
@@ -107,39 +111,25 @@ public class CooccurAgentBeta extends Thread {
 	}
 
 	public CooccurAgentBeta(int NUMBER_OF_TP, int TP_THRESHOLD) throws IOException {
-
 		this.NUMBER_OF_TP = NUMBER_OF_TP;
 		this.TP_THRESHOLD = TP_THRESHOLD;
 		cooccurs = new Cooccurs();
 		users = new Users();
 		docs = new Docs();
 		cooccur = new Cooccur(cooccurs, NUMBER_OF_TP, users, docs);
-		
 		TPCounters = new int[NUMBER_OF_TP];
-		
-
 		consumer = Consumer.createJavaConsumerConnector(createConsumerConfig());
-
-
-		// Not here anymore, the producer has to be created with configuration related to
-		// the word partitioning.
 		producers = new Producer[NUMBER_OF_TP];
 	}
-
-	/**
-	 * Initialize the list of collectors.
-	 */
-	protected void init() {
-		// Initialize cooccurs and TPCounters
-		for (int i = 0; i < NUMBER_OF_TP; i++) {
-			cooccurs.addCooccurMap(new LongObjectOpenHashMap<LongIntOpenHashMap>());
-		}
-	}
+	
+	
+	/**********************************************************************************
+	 * Configuration methods
+	 **********************************************************************************/
 
 	private static ConsumerConfig createConsumerConfig() {
 		// TODO: Use OSSConfiguration and check in http://sna-projects.com/kafka/configuration.php
 		// to set the right config
-
 		Properties props = new Properties();
 		props.put("zk.connect", "localhost:2181");
 		props.put("groupid", "tweets_group");
@@ -151,18 +141,20 @@ public class CooccurAgentBeta extends Thread {
 		return new ConsumerConfig(props);
 	}
 
-
 	private static ProducerConfig createProducerConfig() {
 		// TODO: Use OSSConfiguration
-
 		Properties props = new Properties();
 		props.put("serializer.class", "kafka.serializer.StringEncoder");
 		props.put("zk.connect", "127.0.0.1:2181");
 
 		return new ProducerConfig(props);
 	}
+	
 
-
+	/**********************************************************************************
+	 * Main methods
+	 **********************************************************************************/
+	
 	/**
 	 * Compute cooccur of tweets coming from TwitterStreamingSource.
 	 */
@@ -252,6 +244,21 @@ public class CooccurAgentBeta extends Thread {
 		}
 	}
 
+
+	/**********************************************************************************
+	 * CooccurAgent helper methods
+	 **********************************************************************************/
+
+	/**
+	 * Initialize the list of collectors.
+	 */
+	protected void init() {
+		// Initialize cooccurs and TPCounters
+		for (int i = 0; i < NUMBER_OF_TP; i++) {
+			cooccurs.addCooccurMap(new LongObjectOpenHashMap<LongIntOpenHashMap>());
+		}
+	}
+	
 	/**
 	 * 
 	 * Send cooccur relative to a particular TP to the broker. 
@@ -261,20 +268,14 @@ public class CooccurAgentBeta extends Thread {
 	 * @param ArrayList<byte[]> message
 	 * 
 	 */
-	public void sendToBroker(int TP, ArrayList<byte[]> message) {
+	private void sendToBroker(int TP, ArrayList<byte[]> message) {
 		if (producers[TP] == null) {
 			// TODO: we got to use here TP as key in the producer properties for partitioning.
 			producers[TP] = new Producer<String, byte[]>(createProducerConfig());
 		}
-
 		producers[TP].send(new ProducerData<String, byte[]>("tweet", new Integer(TP).toString(), message));
 	}
-
-
-	/**********************************************************************************
-	 * CooccurAgent helper functions
-	 **********************************************************************************/
-
+	
 	/**
 	 * 
 	 * Serialize the TP coccurs in order to be sent to the broker.
@@ -295,7 +296,6 @@ public class CooccurAgentBeta extends Thread {
 		final long[] outerKeys = TPCooccur.keys;
 
 		for (int i = 0; i < outerStates.length; i++) {
-
 			if(outerStates[i]) {
 				long term = outerKeys[i];
 				buffer.put(Byte.MIN_VALUE);
@@ -315,7 +315,6 @@ public class CooccurAgentBeta extends Thread {
 				}
 			}
 		}
-
 		// Reset this TP
 		// TODO: check if it's the right way
 		cooccurs.resetTP(TP);

@@ -30,6 +30,7 @@ import com.s2m.ludwig.util.lsh.LSH;
 
 public class LSHCooccurCollector extends Thread {
 	// TODO:
+	// 0. Introduce new Cooccurs and Coccur classes like in Agent.
 	// 1. A way to decide how to flush cooccurs to persister (based on the space cooccurs is consuming).
 	// 2. We need (together with cooccurs) to flush sumArrays to LSHTable.
 	private final Logger LOG = LoggerFactory.getLogger(CooccurCollector.class);
@@ -64,12 +65,23 @@ public class LSHCooccurCollector extends Thread {
 	 */
 	private LSH lsh;
 	
-	
+	/**
+	 * The signatures to compute cosine similarities.
+	 */
 	private LongObjectOpenHashMap<byte[]> signatures;
+	
+	/**
+	 * 
+	 */
 	private static LongObjectOpenHashMap<LongIntOpenHashMap> cooccurs;
 	
 	static LudwigConfiguration conf = LudwigConfiguration.get();
+	
 
+	/**********************************************************************************
+	 * Constructors
+	 **********************************************************************************/
+	
 	public LSHCooccurCollector(String topic) throws IOException {
 		this(conf.getNumberOfSameCollectors(), conf.getNumberOfDifferentCollectors());
 		this.topic = topic;
@@ -84,6 +96,11 @@ public class LSHCooccurCollector extends Thread {
 		cooccursSink = new CooccursSink();
 		lsh = new LSH();
 	}
+	
+	
+	/**********************************************************************************
+	 * Configuration methods
+	 **********************************************************************************/
 
 	private static ConsumerConfig createConsumerConfig() {
 		// TODO: Use OSSConfiguration and check in http://sna-projects.com/kafka/configuration.php
@@ -99,6 +116,11 @@ public class LSHCooccurCollector extends Thread {
 
 		return new ConsumerConfig(props);
 	}
+	
+
+	/**********************************************************************************
+	 * Main methods
+	 **********************************************************************************/
 
 	public void run() {
 		
@@ -132,7 +154,7 @@ public class LSHCooccurCollector extends Thread {
 	/**
 	 * Flush all the cooccurs to HBase and create+flush all the related sumArrays.
 	 */
-	protected void flushCooccurs() throws IOException {
+	private void flushCooccurs() throws IOException {
 		final boolean outerStates[] = cooccurs.allocated;
 		final long[] outerKeys = cooccurs.keys;
 		
@@ -151,7 +173,7 @@ public class LSHCooccurCollector extends Thread {
 	
 	
 	@SuppressWarnings("null")
-	protected void updateWordsCooccurs(byte[] body) {
+	private void updateWordsCooccurs(byte[] body) {
 		ByteBuffer buffer = ByteBuffer.wrap(body);
 
 		int SIZEOF_LONG = 8;
