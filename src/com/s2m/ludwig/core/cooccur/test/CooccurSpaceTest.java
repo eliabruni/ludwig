@@ -6,9 +6,48 @@ public class CooccurSpaceTest {
 
 	public static void main(String[] args) {
 
-		int NUM_TOPICS = 100;
-		System.out.println(11090 % NUM_TOPICS);
-		System.out.println(0 % NUM_TOPICS);
+		System.out.println("begin");
+		int[] test = new int[10];
+		for (int i : test) {
+			System.out.println(i);
+		}
+		
+		System.out.println("increment without assignment");
+		increment(test);
+		
+		for (int i : test) {
+			System.out.println(i);
+		}
+		
+		System.out.println("increment with assignment");
+		
+		test = increment(test);
+		
+		for (int i : test) {
+			System.out.println(i);
+		}
+		
+		Integer i = 1;
+		
+		System.out.println("i before: " + i);
+		
+		i = increment(i);
+		
+		System.out.println("i after: " + i);
+		
+		
+	}
+	
+	private static int[] increment(int[] test) {
+		for (int i = 0; i < test.length; i++) {
+			test[i] = test[i] + 10;
+		}
+		return test;
+	}
+	
+	private static Integer increment(Integer i) {
+		i += 1;
+		return i;
 	}
 
 
