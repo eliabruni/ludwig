@@ -3,6 +3,17 @@ package com.s2m.ludwig.util.lsh;
 
 import java.util.Random;
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class LSHHash {
 
 	static Random r = new Random();

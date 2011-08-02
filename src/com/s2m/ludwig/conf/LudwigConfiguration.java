@@ -23,16 +23,23 @@ import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This is the configuration file for OSS. It uses hadoop's xml schema for
- * properties. The default configuration is in $OSS_HOME/oss-conf.xml and is
- * a singleton.
+
+/*************************************************************************
  * 
- * NOTE: The logging system gets configuration information from this file and
- * thus depends on this being initialized. So no logging events are allowed when
- * this is being initialized. If logger is used, an infinite recursion happens
- * and causes a stack overflow.
- */
+ *  Description
+ *  -------
+ *  This is the configuration file for OSS. It uses hadoop's xml schema 
+ *  for properties. The default configuration is in $OSS_HOME/oss-conf.xml 
+ *  and is a singleton.
+ *
+ *  Remarks
+ *  -------
+ *  The logging system gets configuration information from this file and
+ *  thus depends on this being initialized. So no logging events are 
+ *  allowed when this is being initialized. If logger is used, an infinite 
+ *  recursion happens and causes a stack overflow.
+ *
+ *************************************************************************/
 public class LudwigConfiguration extends Configuration {
 	protected static final Logger LOG = LoggerFactory
 	.getLogger(LudwigConfiguration.class);

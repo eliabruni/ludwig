@@ -4,6 +4,18 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.carrotsearch.hppc.ObjectArrayList;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class Cooccurs {
 	
 	/**

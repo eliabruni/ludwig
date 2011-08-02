@@ -16,6 +16,17 @@ import com.danga.MemCached.MemCachedClient;
 import com.danga.MemCached.SockIOPool;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class TermDictionary implements Dictionary {
 	private static final Logger LOG = Logger.getLogger(TermDictionary.class);
 	final private byte[] DICTIONARY_COLUMN_FAMILY = Bytes.toBytes("Dictionary");

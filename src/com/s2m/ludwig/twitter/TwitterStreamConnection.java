@@ -13,15 +13,20 @@ import com.s2m.ludwig.conf.LudwigConfiguration;
 import com.s2m.ludwig.core.stream.StreamConnection;
 
 
-/**
- * Twitter's streaming API requires a valid username and password.
+/*************************************************************************
  * 
- * The requested url gets a stream of sample tweets in json format (xml is
- * available as well). There is one entry per line.
- * 
- * Documentation for this stream can be found here:
- * http://apiwiki.twitter.com/Streaming-API-Documentation
- */
+ *  Description
+ *  -------
+ *  Twitter's streaming API requires a valid username and password.
+ *  The requested url gets a stream of sample tweets in json format 
+ *  (xml is available as well). There is one entry per line.
+ *  
+ *  Remarks
+ *  -------
+ *  Documentation for this stream can be found here:
+ *  http://apiwiki.twitter.com/Streaming-API-Documentation
+ *
+ *************************************************************************/
 public class TwitterStreamConnection extends StreamConnection {
 
 	private String urlString;

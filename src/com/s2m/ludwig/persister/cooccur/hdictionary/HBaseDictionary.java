@@ -13,7 +13,17 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 
-
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class HBaseDictionary implements Dictionary {
 	private static final Logger LOG = Logger.getLogger(HBaseDictionary.class);
 	final private byte[] DICTIONARY_COLUMN_FAMILY = Bytes.toBytes("Dictionary");

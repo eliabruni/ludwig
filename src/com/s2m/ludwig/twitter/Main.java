@@ -6,6 +6,18 @@ import com.s2m.ludwig.core.cooccur.agent.CooccurAgent;
 import com.s2m.ludwig.core.cooccur.collector.CooccurCollector;
 import com.s2m.ludwig.core.handler.StreamSource;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class Main {
 
 	/**

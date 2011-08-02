@@ -1,6 +1,5 @@
 package com.s2m.ludwig.core.cooccur.collector;
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -28,6 +27,17 @@ import com.s2m.ludwig.persister.cooccur.sink.CooccursSink;
 import com.s2m.ludwig.util.lsh.LSH;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class LSHCooccurCollector extends Thread {
 	// TODO:
 	// 0. Introduce new Cooccurs and Coccur classes like in Agent.
@@ -147,7 +157,7 @@ public class LSHCooccurCollector extends Thread {
 
 	
 	/**********************************************************************************
-	 * CooccurCollector helper functions
+	 * Helper methods
 	 * @throws IOException 
 	 **********************************************************************************/
 

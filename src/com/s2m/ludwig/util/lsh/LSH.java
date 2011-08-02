@@ -10,14 +10,22 @@ import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 import com.s2m.ludwig.persister.cooccur.lsh.LSHSink;
 
-/**
+
+/*************************************************************************
  * 
- * This class implements Online Generation of Locality Sensitive Hash Signature.
- * See Van Durme and Lall, 2010 (http://www.cs.jhu.edu/~vandurme/papers/VanDurmeLallACL10.pdf).
- * With NUM_BITS = 256 and POOL_SIZE = 10^5 we should obtain best cosine estimation,
- * with mean absolute error ~ 0.055. Each sumArray occupies 8.192 bits (NUM_BITS*32), by using float[] (See Fig. 3).
+ *  Description
+ *  -------
+ *  This class implements Online Generation of Locality Sensitive Hash Signature.
+ *  See Van Durme and Lall, 2010 (http://www.cs.jhu.edu/~vandurme/papers/VanDurmeLallACL10.pdf).
+ *  With NUM_BITS = 256 and POOL_SIZE = 10^5 we should obtain best cosine estimation,
+ *  with mean absolute error ~ 0.055. Each sumArray occupies 8.192 bits (NUM_BITS*32), 
+ *  by using float[] (See Fig. 3).
  *
- */
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class LSH {
 	// TODO: Randomness between collectors must be tied based on a shared seed s.
 

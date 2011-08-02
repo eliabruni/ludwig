@@ -1,6 +1,5 @@
 package com.s2m.ludwig.core.cooccur.agent;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,6 +38,17 @@ import com.s2m.ludwig.twitter.TwitterStatus;
 import com.s2m.ludwig.twitter.TwitterUser;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class CooccurAgentBeta extends Thread {
 	// TODO: 
 	// 1. Change the flush-to-broker condition based on space consuming.
@@ -67,7 +77,7 @@ public class CooccurAgentBeta extends Thread {
 	private Docs docs;
 
 	/**
-	 * Number of TP for an agent. 
+	 * Number of TP for an CooccurAgent. 
 	 */
 	private int NUMBER_OF_TP;
 
@@ -116,7 +126,7 @@ public class CooccurAgentBeta extends Thread {
 		cooccurs = new Cooccurs();
 		users = new Users();
 		docs = new Docs();
-		cooccur = new Cooccur(cooccurs, NUMBER_OF_TP, users, docs);
+		cooccur = new Cooccur(cooccurs, users, docs);
 		TPCounters = new int[NUMBER_OF_TP];
 		consumer = Consumer.createJavaConsumerConnector(createConsumerConfig());
 		producers = new Producer[NUMBER_OF_TP];
@@ -246,7 +256,7 @@ public class CooccurAgentBeta extends Thread {
 
 
 	/**********************************************************************************
-	 * CooccurAgent helper methods
+	 * Helper methods
 	 **********************************************************************************/
 
 	/**

@@ -5,6 +5,18 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class HBaseDictionaryTest {
 	static Logger logger = Logger.getLogger(HBaseDictionaryTest.class);
 	

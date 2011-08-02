@@ -1,10 +1,18 @@
 package com.s2m.ludwig.util.lsh;
 
 
-/**
- * Contains routines for using bit signatures created with some variant the
- * cosine preserving locality sensitive hash.
- */
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  Contains routines for using bit signatures created with some variant the
+ *  cosine preserving locality sensitive hash.
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class LSHSignature {
 	
   // based on http://infolab.stanford.edu/~manku/bitcount/bitcount.html

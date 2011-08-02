@@ -18,6 +18,17 @@ import com.s2m.ludwig.persister.cooccur.hdictionary.Dictionary;
 import com.s2m.ludwig.persister.cooccur.hdictionary.NotPossibleException;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class DocDictionary implements Dictionary {
 	private static final Logger LOG = Logger.getLogger(DocDictionary.class);
 	final private byte[] DICTIONARY_COLUMN_FAMILY = Bytes.toBytes("Dictionary");

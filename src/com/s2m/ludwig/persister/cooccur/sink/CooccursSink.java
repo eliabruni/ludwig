@@ -11,6 +11,18 @@ import org.apache.hadoop.hbase.util.Bytes;
 import com.carrotsearch.hppc.LongIntOpenHashMap;
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class CooccursSink {
 	private static final long BUFFERSIZE = 65536;
 	private static final byte[] COOCCUR = Bytes.toBytes("Cooccur");

@@ -18,6 +18,18 @@ import com.s2m.ludwig.core.users.Users;
 import com.s2m.ludwig.persister.cooccur.hdictionary.TermDictionary;
 import com.s2m.ludwig.util.FileHandler;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class Cooccur {
 	
 	/**
@@ -30,12 +42,24 @@ public class Cooccur {
 	 */
 	private String STOPWORD_PATH;
 	
+	/**
+	 * This class retains all the info about the cooccurs.
+	 */
 	private Cooccurs cooccurs;
 	
-	private int numberOfTP;
+	/**
+	 * Number of TP for an CooccurAgent. 
+	 */
+	private int NUMBER_OF_TP;
 	
+	/**
+	 * This class retains all the info about the users.
+	 */
 	private Users users;
 	
+	/**
+	 * This class retains all the info about the docs.
+	 */
 	private Docs docs;
 	
 	static LudwigConfiguration conf = LudwigConfiguration.get();
@@ -45,15 +69,15 @@ public class Cooccur {
 	 * Constructors
 	 **********************************************************************************/
 	
-	public Cooccur(int WINDOW_SIZE, String STOPWORD_PATH) {
+	public Cooccur(int WINDOW_SIZE, String STOPWORD_PATH, int NUMBER_OF_TP) {
 		this.WINDOW_SIZE = WINDOW_SIZE;
 		this.STOPWORD_PATH = STOPWORD_PATH;
+		this.NUMBER_OF_TP = NUMBER_OF_TP;
 	}
 	
-	public Cooccur(Cooccurs cooccurs, int numberOfTP, Users users, Docs docs) {
-		this(conf.getWindowSize(), conf.getStopwordsPath());
+	public Cooccur(Cooccurs cooccurs, Users users, Docs docs) {
+		this(conf.getWindowSize(), conf.getStopwordsPath(), conf.getNumberOfTP());
 		this.cooccurs = cooccurs;
-		this.numberOfTP = numberOfTP;
 		this.users = users;
 		this.docs = docs;
 	}
@@ -100,7 +124,7 @@ public class Cooccur {
 
 			// We split the last term % NUMBER_OF_TP digits of term, 
 			// to determine the actual TP.
-			int TP = (int) (term % numberOfTP);
+			int TP = (int) (term % NUMBER_OF_TP);
 
 			// Get the TPCooccur for this TP
 			LongObjectOpenHashMap<LongIntOpenHashMap> cooccur = cooccurs.getCooccur(TP);
@@ -127,7 +151,7 @@ public class Cooccur {
 
 
 	/**********************************************************************************
-	 * Cooccur helper functions
+	 * Helper methods
 	 **********************************************************************************/
 
 	/**

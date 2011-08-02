@@ -11,6 +11,17 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class StreamSource implements Runnable {
 
 	private String topic;

@@ -17,15 +17,20 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import com.carrotsearch.hppc.LongObjectOpenHashMap;
 
-/**
- * 
- * This table is to store LSH d-dimensional vectors (sumArrays), aggregated at each collector's flush.
- * SumArrays are needed to compute terms' signatures for cosine similarity approximation.
- * 
- * @author eliabruni
- *
- */
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  This class is to store LSH d-dimensional vectors (sumArrays), 
+ *  aggregated at each collector's flush. SumArrays are needed to compute 
+ *  terms' signatures for cosine similarity approximation.
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class LSHTable {
 	private static HTablePool pool = new HTablePool();
 	private static final long BUFFERSIZE = 65536;

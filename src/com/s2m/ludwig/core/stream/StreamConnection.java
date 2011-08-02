@@ -2,6 +2,18 @@ package com.s2m.ludwig.core.stream;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public abstract class StreamConnection implements Runnable {
 	
 	protected LinkedBlockingQueue<String> messageQueue = new LinkedBlockingQueue<String>();

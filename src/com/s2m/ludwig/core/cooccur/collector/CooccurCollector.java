@@ -22,6 +22,17 @@ import com.google.common.collect.ImmutableMap;
 import com.s2m.ludwig.conf.LudwigConfiguration;
 
 
+/*************************************************************************
+ * 
+ *  Description
+ *  -------
+ *  
+ *
+ *  Remarks
+ *  -------
+ *  
+ *
+ *************************************************************************/
 public class CooccurCollector extends Thread {
 	// TODO: decide once for all which logger to use ans use it
 	private final Logger LOG = LoggerFactory.getLogger(CooccurCollector.class);
